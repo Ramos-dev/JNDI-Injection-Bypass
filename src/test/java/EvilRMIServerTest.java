@@ -60,6 +60,6 @@ public class EvilRMIServerTest {
 
         registry.bind("ExecByEL",evilRMIServer.execByEL());
         registry.bind("ExecByGroovy",evilRMIServer.execByGroovy());
-        Thread.sleep(1000*1000);
+        //Thread.sleep(1000*1000);
     }
 }
